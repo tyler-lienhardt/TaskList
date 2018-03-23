@@ -1,22 +1,23 @@
 package com.tylerlienhardt.tasklist;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 /**
  * Created by Tyler on 3/3/2018.
  */
 
-public class Task {
+public class Task implements Comparable<Task>{
 
-    public static List<Task> tasks = new ArrayList<Task>();
     private String name;
     private String desc;
-    private boolean completed = false;
+    private Date date;
+    private boolean isDone = false;
 
-    public Task (String name, String desc) {
+    public Task (String name, String desc, Date date) {
         this.name = name;
         this.desc = desc;
+        this.date = date;
     }
 
     public String getName() {
@@ -35,23 +36,40 @@ public class Task {
         this.desc = desc;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public Date getDate() {
+        return date;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public static void createInitialTaskList(){
-        tasks.add(new Task("Crack that whip", "When a problem comes along"));
-        tasks.add(new Task("Give the past the slip", "You must whip it"));
-        tasks.add(new Task("Step on a crack", "Before the cream sits out too long"));
-        tasks.add(new Task("Break your momma's back", "You must whip it"));
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        this.isDone = done;
     }
 
     @Override public String toString() {
         return this.name;
+    }
+
+    //compareTo sorts by isDone state first, then by date
+    public int compareTo(Task task) {
+        if (this.isDone == false && task.isDone() == false) {
+            return this.date.compareTo(task.getDate());
+        }
+        else if (this.isDone == false && task.isDone() == true) {
+            return 1;
+        }
+        else if (this.isDone == true && task.isDone() == false) {
+            return -1;
+        }
+        else {
+            return this.date.compareTo(task.getDate());
+        }
     }
 
 }

@@ -94,4 +94,15 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     }
 
+    //'Delete' button action
+    public void deletePressed(View view) {
+
+        int position = getIntent().getIntExtra("position", -1);
+
+        Intent deleteIntent = new Intent(TaskDetailActivity.this, TaskListActivity.class);
+        deleteIntent.putExtra("position", position);
+
+        setResult(RESULT_OK, deleteIntent);
+        finish();
+    }
 }

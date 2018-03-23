@@ -8,17 +8,6 @@
     tools:context="com.tylerlienhardt.tasklist.NewTaskActivity"
     tools:showIn="@layout/activity_new_task">
 
-    <Button
-        android:id="@+id/delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="32dp"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:text="@string/delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <TextView
         android:id="@+id/task_name_label"
         android:layout_width="wrap_content"

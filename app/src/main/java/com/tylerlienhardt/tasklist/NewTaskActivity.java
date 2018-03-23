@@ -57,7 +57,7 @@ public class NewTaskActivity extends AppCompatActivity {
                 saveIntent.putExtra("taskName", savedNameText.getText().toString());
                 saveIntent.putExtra("taskDesc", savedDescText.getText().toString());
 
-                setResult(RESULT_OK, saveIntent);
+                setResult(RESULT_CANCELED, saveIntent);
                 finish();
 
                 return true;
