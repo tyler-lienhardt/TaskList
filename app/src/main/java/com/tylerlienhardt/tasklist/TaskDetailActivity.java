@@ -1,6 +1,7 @@
 package com.tylerlienhardt.tasklist;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,10 +15,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-public class TaskDetailActivity extends AppCompatActivity {
+import java.util.Date;
 
+public class TaskDetailActivity extends AppCompatActivity {
+    ImageView checkBox;
+
+    String taskName;
+    String taskDesc;
+    Date date = new Date();
+    boolean isDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,17 +39,59 @@ public class TaskDetailActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        //POPULATING DATA
+        final Intent intent = getIntent();
 
         //loading the task name into the text field
-        final Intent intent = getIntent();
-        String taskName = intent.getStringExtra("taskName");
+        taskName = intent.getStringExtra("taskName");
         EditText nameText = findViewById(R.id.task_name_field);
         nameText.setText(taskName);
 
         //loading task description into text field
-        String taskDesc = intent.getStringExtra("taskDesc");
+        taskDesc = intent.getStringExtra("taskDesc");
         EditText descText = findViewById(R.id.task_desc_field);
         descText.setText(taskDesc);
+
+        // Creating checkbox
+        checkBox = findViewById(R.id.checkbox_label_button);
+        isDone = intent.getBooleanExtra("isDone", false);
+
+        if (isDone) {
+            checkBox.setImageResource(R.drawable.checked_box);
+        } else {
+            checkBox.setImageResource(R.drawable.unchecked_box);
+        }
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isDone == false) {
+                    isDone = true;
+                    checkBox.setImageResource(R.drawable.checked_box);
+                }
+                else {
+                    isDone = false;
+                    checkBox.setImageResource(R.drawable.unchecked_box);
+                }
+            }
+        });
+
+        // deleting an item
+        Button deleteButton = (Button) findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("DELETE ACTION ENTERED");
+
+                int position = getIntent().getIntExtra("position", -1);
+
+                Intent deleteIntent = new Intent(TaskDetailActivity.this, TaskListActivity.class);
+                deleteIntent.putExtra("position", position);
+
+                setResult(2, deleteIntent);
+                finish();
+            }
+        });
     }
 
     //creating the menu bar
@@ -75,6 +126,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                 saveIntent.putExtra("position", position);
                 saveIntent.putExtra("taskName", savedNameText.getText().toString());
                 saveIntent.putExtra("taskDesc", savedDescText.getText().toString());
+                saveIntent.putExtra("isDone", isDone);
 
                 setResult(RESULT_OK, saveIntent);
                 finish();
@@ -94,15 +146,4 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     }
 
-    //'Delete' button action
-    public void deletePressed(View view) {
-
-        int position = getIntent().getIntExtra("position", -1);
-
-        Intent deleteIntent = new Intent(TaskDetailActivity.this, TaskListActivity.class);
-        deleteIntent.putExtra("position", position);
-
-        setResult(RESULT_OK, deleteIntent);
-        finish();
-    }
 }

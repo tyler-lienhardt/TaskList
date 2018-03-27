@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
@@ -28,11 +30,14 @@ public class TaskListActivity extends AppCompatActivity {
 
     ArrayList<Task> tasks = new ArrayList<>();
 
-    private ListView listView;
+    private RecyclerView recyclerView;
     private TaskListAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
     private final int TASK_EDIT_REQUEST_CODE = 0;
     private final int NEW_TASK_REQUEST_CODE = 1;
-    private final int RESULT_DELETE = 2;
+    final int RESULT_DELETE = 2;
+    final int RESULT_NEW = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,30 +50,14 @@ public class TaskListActivity extends AppCompatActivity {
         createInitialTaskList();
 
         // Populating the list view with tasks
-        listView = (ListView) findViewById(R.id.task_list_view);
-        adapter = new TaskListAdapter(this, tasks, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(TaskListActivity.this, "checkbox!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        listView.setAdapter(adapter);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
 
-        // Action for list view item click, opens task detail screen
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
-                Task task = (Task)listView.getAdapter().getItem(position);
-                String taskName = task.getName();
-                String taskDesc = task.getDesc();
-                intent.putExtra("taskName", taskName);
-                intent.putExtra("taskDesc", taskDesc);
-                intent.putExtra("position", position);
-                startActivityForResult(intent, TASK_EDIT_REQUEST_CODE);
-            }
-        });
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
+        adapter = new TaskListAdapter(this, tasks);
+        recyclerView.setAdapter(adapter);
 
         // The + button (new task) action
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -90,13 +79,15 @@ public class TaskListActivity extends AppCompatActivity {
 
                 //updating the edited task
                 int position = intent.getIntExtra("position", -1);
-                Task task = (Task)listView.getAdapter().getItem(position);
+                Task task = tasks.get(position);
 
                 String taskName = intent.getStringExtra("taskName");
                 task.setName(taskName);
 
                 String taskDesc = intent.getStringExtra("taskDesc");
                 task.setDesc(taskDesc);
+
+                task.setDone(intent.getBooleanExtra("isDone", true));
 
                 //updating the ListView
                 adapter.notifyDataSetChanged();
@@ -109,25 +100,16 @@ public class TaskListActivity extends AppCompatActivity {
 
                 int position = intent.getIntExtra("position", -1);
 
-                Task task = (Task)listView.getAdapter().getItem(position);
+                Task task = tasks.get(position);
 
-                adapter.remove(task);
-                try {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-                catch (Exception e) {
+                tasks.remove(task);
+                adapter.notifyItemRemoved(position);
 
-                }
             }
         }
 
         if (requestCode == NEW_TASK_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == RESULT_NEW) {
 
                 //building the new task
                 String taskName = intent.getStringExtra("taskName");
@@ -137,8 +119,9 @@ public class TaskListActivity extends AppCompatActivity {
                 Task newTask = new Task(taskName, taskDesc, new Date());
 
                 //adding new task to ArrayList and updating ListView
-                adapter.add(newTask);
+                tasks.add(newTask);
                 adapter.notifyDataSetChanged();
+
             }
         }
 

@@ -1,61 +1,134 @@
 package com.tylerlienhardt.tasklist;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Collections;
 
 
 /**
  * Created by Tyler on 3/21/2018.
  */
 
-public class TaskListAdapter extends ArrayAdapter<Task> {
-    public TaskListAdapter(Context context, ArrayList<Task> tasks, View.OnClickListener clickListener) {
-        super(context, 0, tasks);
-        this.checkListener = checkListener;
+public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHolder> {
+
+    ArrayList<Task> tasks;
+    Context context;
+
+    public TaskListAdapter(Context context, ArrayList<Task> tasks) {
+        this.tasks = tasks;
+        this.context = context;
     }
 
-    private View.OnClickListener checkListener;
+    // Provide a reference to the views for each data item.
+    // Complex data items may need more than one view per item,
+    // and you provide access to all the views for a data item in a view holder.
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView checkBoxView;
+        private TextView nameLabel;
+        private TextView dateLabel;
 
-    public void setCheckListener(View.OnClickListener clickListener) {
-        this.checkListener = checkListener;
+
+
+        public ViewHolder(View view) {
+            super(view);
+            itemView.setOnClickListener(this);
+
+            checkBoxView = itemView.findViewById(R.id.checkbox_button);
+            nameLabel = itemView.findViewById(R.id.task_name);
+            dateLabel = itemView.findViewById(R.id.task_date);
+        }
+
+        public void bind(Task task) {
+            final Task mTask = task;
+
+            nameLabel.setText(task.getName());
+
+            dateLabel.setText(Task.dateToString(task.getDate()));
+
+            //creating and setting the clickable checkbox
+            if (task.isDone() == true) {
+                checkBoxView.setImageResource(R.drawable.checked_box);
+            } else {
+                checkBoxView.setImageResource(R.drawable.unchecked_box);
+            }
+
+            checkBoxView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (mTask.isDone() == false) {
+                        mTask.setDone(true);
+                        checkBoxView.setImageResource(R.drawable.checked_box);
+                    }
+                    else {
+                        mTask.setDone(false);
+                        checkBoxView.setImageResource(R.drawable.unchecked_box);
+                    }
+
+//                    Collections.sort(tasks);
+                    notifyDataSetChanged();
+
+                    System.out.println("CHECKBOX CLICKED"); //FIXME
+                    System.out.println(mTask.getName() + " isDone STATE CHANGED TO: " + mTask.isDone()); //FIXME
+                }
+            });
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(v.getContext(), TaskDetailActivity.class);
+            int position = getAdapterPosition();
+            Task task = tasks.get(position);
+            String taskName = task.getName();
+            String taskDesc = task.getDesc();
+            intent.putExtra("taskName", taskName);
+            intent.putExtra("taskDesc", taskDesc);
+            intent.putExtra("position", position);
+            intent.putExtra("isDone", task.isDone());
+            intent.putExtra("date", task.getDate());
+
+            System.out.println("INTENT CREATED"); //FIXME
+
+            ((Activity)context).startActivityForResult(intent, 0);
+        }
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        Task task = getItem(position);
+    public TaskListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //create a new view
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
 
-        //Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_task, parent, false);
-        }
-        //really do this on image view
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.checkbox_button);
-        imageView.setOnClickListener(checkListener);
+        ViewHolder vh = new ViewHolder(view);
+        return vh;
+    }
 
-        // Lookup view for data population
-        TextView nameLabel = (TextView) convertView.findViewById(R.id.task_name);
-        nameLabel.setText(task.getName());
+    // replace the contents of a view (invoked by layout manager)
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        // - get element from your dataset at this position
+        // - replace the contents of the view with that element
 
-        TextView dateLabel = (TextView) convertView.findViewById(R.id.task_date);
-        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        dateLabel.setText(dateFormat.format(task.getDate()));
+        Task task = tasks.get(position);
+        holder.bind(task);
+    }
 
-
-        return convertView;
+    // Return the size of your dataset (invoked by the layout manager)
+    @Override
+    public int getItemCount() {
+        return tasks.size();
     }
 
 }

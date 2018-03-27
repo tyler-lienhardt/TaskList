@@ -9,10 +9,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Date;
+
 public class NewTaskActivity extends AppCompatActivity {
+    EditText taskName;
+    EditText taskDesc;
+    DatePicker datePicker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +31,10 @@ public class NewTaskActivity extends AppCompatActivity {
         //creating the "up" button
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+
+        taskName = findViewById(R.id.new_task_field);
+        taskDesc = findViewById(R.id.new_desc_field);
+        datePicker = findViewById(R.id.new_task_date_picker);
     }
 
     //creating the menu bar
@@ -40,11 +51,8 @@ public class NewTaskActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_save_button:
 
-                EditText savedNameText = findViewById(R.id.new_task_field);
-                EditText savedDescText = findViewById(R.id.new_desc_field);
-
                 //checking for empty task name
-                if (savedNameText.getText().toString().matches("")) {
+                if (taskName.getText().toString().matches("")) {
                     Toast.makeText(this, "You must enter a task name.", Toast.LENGTH_SHORT).show();
 
                     return true;
@@ -54,10 +62,12 @@ public class NewTaskActivity extends AppCompatActivity {
 
                 //sending saved data back to taskListActivity
                 Intent saveIntent = new Intent(NewTaskActivity.this, TaskListActivity.class);
-                saveIntent.putExtra("taskName", savedNameText.getText().toString());
-                saveIntent.putExtra("taskDesc", savedDescText.getText().toString());
+                saveIntent.putExtra("taskName", taskName.getText().toString());
+                saveIntent.putExtra("taskDesc", taskDesc.getText().toString());
+                //saveIntent.putExtra("dateString", Task.dateToString(datePicker.));//FIXME retrieve date from datePicker
 
-                setResult(RESULT_CANCELED, saveIntent);
+                //FIXME link to result code parameter in TaskListActivity
+                setResult(3, saveIntent);
                 finish();
 
                 return true;
