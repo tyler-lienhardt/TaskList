@@ -22,7 +22,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -36,8 +38,8 @@ public class TaskListActivity extends AppCompatActivity {
 
     private final int TASK_EDIT_REQUEST_CODE = 0;
     private final int NEW_TASK_REQUEST_CODE = 1;
-    final int RESULT_DELETE = 2;
-    final int RESULT_NEW = 3;
+    static final int RESULT_DELETE = 2;
+    static final int RESULT_NEW = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,10 @@ public class TaskListActivity extends AppCompatActivity {
 
                 task.setDone(intent.getBooleanExtra("isDone", true));
 
+                task.setMonth(intent.getIntExtra("month", 0));
+                task.setDay(intent.getIntExtra("day", 0));
+                task.setYear(intent.getIntExtra("year", 0));
+
                 //updating the ListView
                 adapter.notifyDataSetChanged();
             }
@@ -115,8 +121,11 @@ public class TaskListActivity extends AppCompatActivity {
                 String taskName = intent.getStringExtra("taskName");
                 String taskDesc = intent.getStringExtra("taskDesc");
 
-                //FIXME get date from new task activity
-                Task newTask = new Task(taskName, taskDesc, new Date());
+                int month = intent.getIntExtra("month", 0);
+                int day = intent.getIntExtra("day", 0);
+                int year = intent.getIntExtra("year", 0);
+
+                Task newTask = new Task(taskName, taskDesc, month, day, year);
 
                 //adding new task to ArrayList and updating ListView
                 tasks.add(newTask);
@@ -156,9 +165,9 @@ public class TaskListActivity extends AppCompatActivity {
 
     //populating the list with sample tasks
     public void createInitialTaskList(){
-        tasks.add(new Task("task1", "desc1", new Date()));
-        tasks.add(new Task("task2", "desc2", new Date()));
-        tasks.add(new Task("task3 with a very very extremely super duper looong name", "desc3", new Date()));
-        tasks.add(new Task("task4", "desc4", new Date()));
+        tasks.add(new Task("task1", "desc1", 3, 1, 2018));
+        tasks.add(new Task("task2", "desc2", 3, 2, 2018));
+        tasks.add(new Task("task3 with a very very extremely super duper looong name", "desc3", 3, 3, 2018));
+        tasks.add(new Task("task4", "desc4", 3, 4, 2018));
     }
 }

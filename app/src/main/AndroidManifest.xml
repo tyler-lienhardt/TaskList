@@ -24,6 +24,7 @@
             android:name=".TaskDetailActivity"
             android:label="Task Details"
             android:parentActivityName="com.tylerlienhardt.tasklist.TaskListActivity"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".NewTaskActivity"

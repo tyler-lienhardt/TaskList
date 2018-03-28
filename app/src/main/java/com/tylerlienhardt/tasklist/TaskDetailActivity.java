@@ -14,18 +14,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class TaskDetailActivity extends AppCompatActivity {
     ImageView checkBox;
+    DatePicker datePicker;
 
     String taskName;
     String taskDesc;
-    Date date = new Date();
+
+    int month, day, year;
+
     boolean isDone;
 
     @Override
@@ -39,7 +44,6 @@ public class TaskDetailActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        //POPULATING DATA
         final Intent intent = getIntent();
 
         //loading the task name into the text field
@@ -76,7 +80,14 @@ public class TaskDetailActivity extends AppCompatActivity {
             }
         });
 
-        // deleting an item
+        //loading date into datePicker
+        year = intent.getIntExtra("year", 0);
+        month = intent.getIntExtra("month", 0);
+        day = intent.getIntExtra("day", 0);
+        datePicker = findViewById(R.id.task_detail_date_picker);
+        datePicker.updateDate(year, month, day);
+
+        // Delete button
         Button deleteButton = (Button) findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +138,9 @@ public class TaskDetailActivity extends AppCompatActivity {
                 saveIntent.putExtra("taskName", savedNameText.getText().toString());
                 saveIntent.putExtra("taskDesc", savedDescText.getText().toString());
                 saveIntent.putExtra("isDone", isDone);
+                saveIntent.putExtra("month", datePicker.getMonth());
+                saveIntent.putExtra("day", datePicker.getDayOfMonth());
+                saveIntent.putExtra("year", datePicker.getYear());
 
                 setResult(RESULT_OK, saveIntent);
                 finish();

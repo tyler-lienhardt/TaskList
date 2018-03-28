@@ -60,14 +60,15 @@ public class NewTaskActivity extends AppCompatActivity {
 
                 Toast.makeText(NewTaskActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
 
-                //sending saved data back to taskListActivity
+                //storing saved data in intent
                 Intent saveIntent = new Intent(NewTaskActivity.this, TaskListActivity.class);
                 saveIntent.putExtra("taskName", taskName.getText().toString());
                 saveIntent.putExtra("taskDesc", taskDesc.getText().toString());
-                //saveIntent.putExtra("dateString", Task.dateToString(datePicker.));//FIXME retrieve date from datePicker
+                saveIntent.putExtra("month", datePicker.getMonth());
+                saveIntent.putExtra("day", datePicker.getDayOfMonth());
+                saveIntent.putExtra("year", datePicker.getYear());
 
-                //FIXME link to result code parameter in TaskListActivity
-                setResult(3, saveIntent);
+                setResult(TaskListActivity.RESULT_NEW, saveIntent);
                 finish();
 
                 return true;

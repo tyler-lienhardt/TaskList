@@ -1,14 +1,17 @@
 package com.tylerlienhardt.tasklist;
 
 import android.content.Context;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -19,13 +22,19 @@ public class Task implements Comparable<Task> {
 
     private String name;
     private String desc;
-    private Date date;
+
+    private int month;
+    private int day;
+    private int year;
+
     private boolean isDone = false;
 
-    public Task (String name, String desc, Date date) {
+    public Task (String name, String desc, int month, int day, int year) {
         this.name = name;
         this.desc = desc;
-        this.date = date;
+        this.month = month;
+        this.day = day;
+        this.year = year;
     }
 
     public String getName() {
@@ -44,12 +53,28 @@ public class Task implements Comparable<Task> {
         this.desc = desc;
     }
 
-    public Date getDate() {
-        return date;
+    public int getMonth() {
+        return month;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public boolean isDone() {
@@ -60,60 +85,20 @@ public class Task implements Comparable<Task> {
         this.isDone = done;
     }
 
+    public String dateAsString() {
+        return (month + 1) + "-" + day + "-" + year;
+    }
+
     @Override public String toString() {
         return this.name;
     }
 
-    public static Date stringToDate (String string) throws ParseException {
-        return new SimpleDateFormat("MM/dd/yyyy").parse(string);
-    }
-
-    public static String dateToString (Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        return dateFormat.format(date);
-    }
-
-    //FIXME work in progress
-    /*
-    public static ImageView displayCheckBox(final Context context, final Task task) {
-        final ImageView checkBoxView = new ImageView(context).findViewById(R.id.checkbox_button);
-
-        if (task.isDone() == false) {
-            checkBoxView.setImageResource(R.drawable.unchecked_box);
-            return checkBoxView;
-        }
-        else {
-            checkBoxView.setImageResource(R.drawable.checked_box);
-            return checkBoxView;
-        }
-
-        checkBoxView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (task.isDone() == false) {
-                    task.setDone(true);
-                    checkBoxView.setImageResource(R.drawable.checked_box);
-                }
-                else {
-                    task.setDone(false);
-                    checkBoxView.setImageResource(R.drawable.unchecked_box);
-                }
-
-//                    Collections.sort(tasks);
-//                notifyDataSetChanged();
-
-                System.out.println("CHECKBOX CLICKED"); //FIXME
-                System.out.println(task.getName() + " isDone STATE CHANGED TO: " + task.isDone());
-            }
-        });
-    }
-    */
-
+    //FIXME implement sorting by date
     //compareTo sorts by isDone state first, then by date
     public int compareTo(Task task) {
         if (this.isDone == false && task.isDone() == false) {
-            return this.date.compareTo(task.getDate());
+            //return this.date.compareTo(task.getDate());
+            return 0;
         }
         else if (this.isDone == false && task.isDone() == true) {
             return 1;
@@ -122,8 +107,8 @@ public class Task implements Comparable<Task> {
             return -1;
         }
         else {
-            return this.date.compareTo(task.getDate());
+            //return this.date.compareTo(task.getDate());
+            return 0;
         }
     }
-
 }

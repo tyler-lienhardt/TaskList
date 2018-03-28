@@ -56,7 +56,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
             nameLabel.setText(task.getName());
 
-            dateLabel.setText(Task.dateToString(task.getDate()));
+            dateLabel.setText(task.dateAsString());
 
             //creating and setting the clickable checkbox
             if (task.isDone() == true) {
@@ -80,9 +80,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
 //                    Collections.sort(tasks);
                     notifyDataSetChanged();
-
-                    System.out.println("CHECKBOX CLICKED"); //FIXME
-                    System.out.println(mTask.getName() + " isDone STATE CHANGED TO: " + mTask.isDone()); //FIXME
                 }
             });
         }
@@ -92,15 +89,13 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
             Intent intent = new Intent(v.getContext(), TaskDetailActivity.class);
             int position = getAdapterPosition();
             Task task = tasks.get(position);
-            String taskName = task.getName();
-            String taskDesc = task.getDesc();
-            intent.putExtra("taskName", taskName);
-            intent.putExtra("taskDesc", taskDesc);
+            intent.putExtra("taskName", task.getName());
+            intent.putExtra("taskDesc", task.getDesc());
             intent.putExtra("position", position);
             intent.putExtra("isDone", task.isDone());
-            intent.putExtra("date", task.getDate());
-
-            System.out.println("INTENT CREATED"); //FIXME
+            intent.putExtra("month", task.getMonth());
+            intent.putExtra("day", task.getDay());
+            intent.putExtra("year", task.getYear());
 
             ((Activity)context).startActivityForResult(intent, 0);
         }
